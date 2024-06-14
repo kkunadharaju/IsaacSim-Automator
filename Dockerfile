@@ -48,15 +48,19 @@ RUN (cd /tmp/app/src/packer/aws/isaac && packer init .)
 
 # azure command line
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-
 # store azure credentials in a persistent location
 RUN ln -s /app/state/.azure /root/.azure
+
+# create dir if it doesnt exist
+RUN echo "mkdir -p /app/state/.azure" >> /root/.bashrc
 
 # pip
 RUN pip install click randomname pwgen debugpy
 
 # ansible
 ENV ANSIBLE_FORCE_COLOR=true
+# for some reason, the ansible.cfg file is not being picked up on Windows
+ENV ANSIBLE_CONFIG="/app/src/ansible/ansible.cfg"
 RUN pip install ansible
 RUN ansible-galaxy collection install community.docker
 
@@ -70,7 +74,8 @@ RUN apt-get install -yq apt-transport-https ca-certificates gnupg
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
 RUN apt-get update && apt-get install -yq google-cloud-cli
-RUN mkdir /root/.config ; ln -s /app/state/.gcp /root/.config/gcloud
+RUN ln -s /app/state/.gcp /root/.config/gcloud
+RUN echo "mkdir -p /app/state/.gcp" >> /root/.bashrc
 
 # alibaba cloud cli
 # @see https://github.com/aliyun/aliyun-cli#installation
@@ -88,11 +93,10 @@ RUN ./aws/install
 COPY . /app
 
 # customoize bash prompt
-RUN echo "export PS1='\[\033[01;36m\][Isaac Sim Automator \${VERSION}]\[\033[00m\]:\w\$ '" >>  /root/.bashrc
+RUN echo "export PS1='\[\033[01;36m\][Isaac Automator \${VERSION}]\[\033[00m\]:\w\$ '" >>  /root/.bashrc
 
 WORKDIR /app
 
 ENTRYPOINT [ "/bin/sh", "-c" ]
 
-ENV VERSION="v2.3.1"
-
+ENV VERSION="v3.1.0"

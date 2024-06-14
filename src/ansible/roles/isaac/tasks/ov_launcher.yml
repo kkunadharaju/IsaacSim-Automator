@@ -25,41 +25,46 @@
     - /home/{{ ansible_user }}/Pictures
     - /home/{{ ansible_user }}/Desktop
 
-- name: Upload icon images
+- name: Upload OV Icon
   copy:
     src: "{{ item }}"
-    dest: /home/{{ ansible_user }}/Pictures/isaacsim-{{ item }}
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    dest: "/home/{{ ansible_user }}/Pictures/{{ item }}"
     mode: 0644
   with_items:
-    - icon.png
-    - icon-shell.png
+    - ov-icon.png
+
+- name: Download OV Launcher
+  get_url:
+    url: https://install.launcher.omniverse.nvidia.com/installers/omniverse-launcher-linux.AppImage
+    dest: "/home/{{ ansible_user }}/Omniverse.AppImage"
+    mode: 0755
+  become_user: "{{ ansible_user }}"
 
 - name: Create desktop icon
-  template:
-    src: "{{ item }}"
-    dest: /home/{{ ansible_user }}/Desktop/{{ item }}
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+  copy:
+    content: |
+      [Desktop Entry]
+      Name=Omniverse Launcher
+      Comment=Omniverse Launcher
+      Exec=/home/{{ ansible_user }}/Omniverse.AppImage
+      Icon=/home/{{ ansible_user }}/Pictures/ov-icon.png
+      Terminal=false
+      Type=Application
+      Categories=Utility;
+    dest: /home/{{ ansible_user }}/Desktop/ovl.desktop
     mode: 0644
-  with_items:
-    - isaacsim.desktop
-    - isaacsim-shell.desktop
 
-- name: Allow execution of desktop icon
+- name: Allow execution of OVL desktop icon
   shell: gio set /home/{{ ansible_user }}/Desktop/{{ item }} metadata::trusted true
   become_user: "{{ ansible_user }}"
   with_items:
-    - isaacsim.desktop
-    - isaacsim-shell.desktop
+    - ovl.desktop
 
-- name: Set permissions for desktop icon
+- name: Set permissions for OVL desktop icon
   file:
     path: /home/{{ ansible_user }}/Desktop/{{ item }}
     mode: 0755
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
   with_items:
-    - isaacsim.desktop
-    - isaacsim-shell.desktop
+    - ovl.desktop
