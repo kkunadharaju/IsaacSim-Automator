@@ -16,7 +16,6 @@ __pycache__
 **/*_cache
 
 results/*
-uploads/*
 .DS_Store
 
 src/ansible/roles/isaac/files/autorun.sh

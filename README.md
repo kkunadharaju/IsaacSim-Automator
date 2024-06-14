@@ -6,6 +6,10 @@ Isaac Automator allows a quick deployment of Isaac Sim and Isaac Lab to the publ
 
 The result is a fully configured remote-desktop cloud workstation, which can be used for development and testing of the robotic applications within minutes and on a budget. Isaac Automator supports varierty of GPU instances and stop-start functionality to save on cloud costs, provides tools to aid the workflow (uploading and downloading data, autorun, deployment management, etc).
 
+Isaac Sim Automator allows for quick deployment of Isaac Sim and Isaac Sim-based applications (like Orbit and Omniverse Isaac Gym Environments), onto the public clouds (AWS, GCP, Azure, and Alibaba Cloud are currently supported).
+
+The result is a fully configured remote desktod cloud workstation, which can be used for development and testing of the robotic applications within minutes and on a budget. Isaac Sim Automator supports varierty of GPU instances and stop-start functionality to save on cloud costs and a varierty of tools to aid the workflow (like uploading and downloading data, autorun, deployment management, etc).
+
 - [Installation](#installation)
   - [Installing Docker](#installing-docker)
   - [Obtaining NGC API Key](#obtaining-ngc-api-key)
@@ -134,13 +138,19 @@ docker run --platform linux/x86_64 -it --rm -v .:/app isa bash
   You will need _AWS Access Key_ and _AWS Secret Key_ for an existing account. You can obtain those in <a href="https://console.aws.amazon.com/iamv2/home#/home">Identity and Access Management (IAM) Section</a> in the AWS console.
 </details>
 
-If yoou have completed the above steps or already have your permissions and credentials set up, run the following command in the project root directory:
+If you have completed the above steps or already have your permissions and credentials set up, run the following command in the project root directory:
 
 ```sh
 # enter the automator container
 ./run
 # inside container:
 ./deploy-aws
+
+## To run with user filled values ##
+# Please make sure fill details inside file "sdg-deploy.txt"
+## update file under folder "uploads/" "credentials" with aws access and secret key to be passed to IsaacSIM container for the new data upload to S3 
+
+cat sdg-deploy.txt | xargs ./deploy-aws
 ```
 
 Tip: Run `./deploy-aws --help` to see more options.
